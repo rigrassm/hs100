@@ -64,9 +64,7 @@ mac_from_ip()
 {
     # if you've contacted an IP recently, the arp cache has juicy info
     local ip=$1
-    mac=$(arp -a \
-            | grep "($ip)" \
-            | egrep -o '(([0-9a-fA-F]{1,2}:){5}[0-9a-fA-F]{1,2})' )
+    mac=$(grep "$ip" /proc/net/arp| egrep -o '(([0-9a-fA-F]{1,2}:){5}[0-9a-fA-F]{1,2})')
     [ -z "$mac" ] && { echo 2>&1 "arp didn't find a MAC for $ip!"; return 1; }
     echo $mac
 }
@@ -118,9 +116,6 @@ check_dependencies() {
         "in the path, the discover command will fail"
     check_dependency shasum \
         "The shasum programme for hashing strings isn't"\
-        "in the path, the sudo discover command will fail"
-    check_dependency arp \
-        "The arp programme to access Address Resolution Protocol cache isn't"\
         "in the path, the sudo discover command will fail"
 }
 
@@ -222,9 +217,6 @@ cmd_discover(){
 
     check_dependency shasum \
         "The shasum programme for hashing strings isn't"\
-        "in the path, the sudo discover command will fail"
-    check_dependency arp \
-        "The arp programme to access Address Resolution Protocol cache isn't"\
         "in the path, the sudo discover command will fail"
 
     # remove existing hs100* hosts entries
